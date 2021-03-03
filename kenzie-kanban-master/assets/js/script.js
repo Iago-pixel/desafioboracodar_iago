@@ -6,19 +6,19 @@ const kenzieKanban = new Workspace(0,"Kenzie Kanban")
 
 //2 - CRIA UMA NOVA SEÇÃO MODELO
 const todo = new Secao("Todo")
-
-//3 - CRIA CARD DE ATIVIDADES MODELO
-//const fazerExercicio = new Card(0,"Fazer Exercícios da Kenzie","Preciso praticar mais")
-
-//4 - ADICIONA O CARD DENTRO DA SEÇÃO MODELO
-//todo.adicionarCard(fazerExercicio)
+const boraCodar = new Secao("#boracodar")
 
 //5 - ADICIONA A SEÇÃO DENTRO DO WORKSPACE MODELO
 kenzieKanban.adicionarSecao(todo)
+kenzieKanban.adicionarSecao(boraCodar)
 
 //6 - IMPRIME MODELOS CRIADOS
 const areaSecoes = document.querySelector(".app_secoes")
 kenzieKanban.secoes.forEach(imprimirSecoes)
+criarCard(0,"Fazer Exercícios da Kenzie","Preciso praticar mais")
+criarCard(0,"Assisti live da kenzie","Preciso aprender mais")
+criarCard(1,"Usar drag and drop","tem dicas no read")
+criarCard(1,"Adicionar botão de apagar seção","Boa sorte!")
 
 //**********************************/
 // INICIALIZANDO APLICAÇÃO
@@ -91,6 +91,12 @@ function salvarCard(){
     }
 }
 
+function criarCard(secaoId, nomeCard, descricaoCard) {
+    const novoCard = new Card(secaoId, nomeCard, descricaoCard);
+    kenzieKanban.adicionarCard(secaoId, novoCard);
+    templateCards(novoCard);
+}
+
 function imprimirSecoes(secao){
     const nomeSecao  = secao.nome
 
@@ -129,13 +135,31 @@ function allowDrop(ev) {
 function drop(ev) {
     ev.preventDefault();
     let data = ev.dataTransfer.getData("text");
-    if (ev.target.id) {
-        ev.target.parentNode.appendChild(document.getElementById(data));
+    let ids = data.split(',');
+    document.getElementById(data).remove();
+    idDoCard = ids[1];
+    idDaSecao = ids[0];
+    let novaSecao;
+    //console.log(data);
+    if (ev.target.innerText.includes('<ul')) {
+        ids = ev.target.Node.firstChild.id;
+        novaSecao = ids[0];
+        console.log(novaSecao)
+      //  ev.target.appendChild(document.getElementById(data));
         //console.log(ev.target)
+    } else if (ev.target.id.includes(',')) {
+        ids = ev.target.id.split(',');
+        novaSecao = ids[0];
+        console.log(novaSecao)
     } else {
-        ev.target.parentNode.parentNode.appendChild(document.getElementById(data));
-        //console.log(ev.target)
+      //  console.log(ev.target)
+        ids = ev.target.parentNode.id.split(',');
+        novaSecao = ids[0]
+        console.log(novaSecao)
     }
+    const cardTraferindo = kenzieKanban._secoes[idDaSecao]._cards[idDoCard];
+    criarCard(novaSecao, cardTraferindo.nome, cardTraferindo.descricao)
+    kenzieKanban.removerCard(idDoCard,idDaSecao)
 }
 
 function validacao(inputText){
