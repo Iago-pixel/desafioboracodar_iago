@@ -14,7 +14,7 @@ function templateCards(card) {
     btnDeleteCard.addEventListener("click", excluirCard)
 
     const li = document.createElement("li")
-    li.id = card.id + ',' + card.idSecao
+    li.id = card.idSecao + ',' + card.id
     li.draggable = true
     li.addEventListener("dragstart", drag)
     const h2 = document.createElement("h2")
